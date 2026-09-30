@@ -1,4 +1,4 @@
-# 🌊 FloodVoice (เสียงน้ำท่วม)
+🌊 FloodVoice (เสียงน้ำท่วม)
 > **ระบบเฝ้าระวังและคัดกรองสัญญาณขอความช่วยเหลือเหตุน้ำท่วมจาก Social Media**  
 > *Open-Source Disaster Response Pipeline for Detecting Thai Flood Distress Signals*
 
@@ -12,7 +12,7 @@
 
 ---
 
-## 🗺️ แผนผังการทำงาน (System Architecture)
+แผนผังการทำงาน (System Architecture)
 
 ```mermaid
 flowchart TD
@@ -52,7 +52,7 @@ flowchart TD
 
 ---
 
-## 🔑 คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
+คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
 
 คัดลอกไฟล์ `.env.example` ไปเป็น `.env` ก่อนเริ่มใช้งาน:
 ```bash
@@ -71,14 +71,14 @@ cp .env.example .env
 | **`YOUTUBE_API_KEY`** | ค้นหาวิดีโอและ Live Stream บน YouTube อัตโนมัติ | เปิดใช้งาน YouTube Data API v3 ฟรีที่ Google Cloud Console *(หากไม่ใส่ ระบบจะค้นหาผ่าน yt-dlp ให้อัตโนมัติ)* | ทางเลือก |
 | **`APIFY_TOKEN`** | ใช้ดึงฟีด Facebook และ TikTok ผ่าน Cloud Scraper | รับ Token ได้จาก [Apify.com](https://apify.com/) | ทางเลือก |
 
-> [!TIP]
+> [Note]
 > **เริ่มใช้งานได้ฟรี 100% ทันที:** เพียงคุณกรอก **`GEMINI_API_KEY`** เพียงตัวเดียว ระบบก็สามารถทำงานได้เต็มรูปแบบทั้งการสแกนและส่งออกผลลัพธ์เป็น Obsidian Markdown ในเครื่อง!
 
 ---
 
-## 🚀 วิธีการติดตั้งและเริ่มใช้งาน
+วิธีการติดตั้งและเริ่มใช้งาน
 
-### วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
+วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
 
 1. **ดาวน์โหลดโปรเจกต์:**
    ```bash
@@ -109,7 +109,7 @@ cp .env.example .env
 
 ---
 
-### วิธีที่ 2: รันผ่าน Docker (คลิกเดียว ไม่ต้องลงโปรแกรมเพิ่ม)
+วิธีที่ 2: รันผ่าน Docker (คลิกเดียว ไม่ต้องลงโปรแกรมเพิ่ม)
 
 เหมาะสำหรับเปิดทิ้งไว้บน Server ตลอด 24 ชั่วโมง:
 ```bash
@@ -121,7 +121,7 @@ docker compose up -d --build
 
 ---
 
-## 🎯 การปรับแต่งคำค้นหาและจังหวัด (`keywords.json`)
+การปรับแต่งคำค้นหาและจังหวัด (`keywords.json`)
 
 คุณสามารถระบุจังหวัดที่ต้องการเฝ้าระวังหรือคำค้นเฉพาะถิ่นได้ที่ไฟล์ `keywords.json`:
 
@@ -145,20 +145,20 @@ docker compose up -d --build
 
 ---
 
-## 📊 ตัวอย่างผลลัพธ์ใน Google Sheets & Obsidian
+ ตัวอย่างผลลัพธ์ใน Google Sheets & Obsidian
 
 | ความเร่งด่วน | ระดับน้ำ | จังหวัด | อำเภอ/เขต | ตำบล/แขวง | สิ่งที่ต้องการด่วน | เบอร์ติดต่อ | ลิงก์ต้นทาง |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 🚨 CRITICAL | ระดับอก | ปราจีนบุรี | กบินทร์บุรี | กบินทร์ | เรือพาย, นมเด็ก, น้ำดื่ม | 081-xxx-xxxx | [ดูคลิป] |
+
+| 🔴 CRITICAL | ระดับอก | ปราจีนบุรี | กบินทร์บุรี | กบินทร์ | เรือพาย, นมเด็ก, น้ำดื่ม | 081-xxx-xxxx | [ดูคลิป] |
 | 🔴 HIGH | ระดับเอว | เชียงราย | แม่สาย | เวียงพางคำ | ข้าวกล่อง, ยาประจำตัว | 089-xxx-xxxx | [ดู Live สด] |
 
 ---
 
-## 🌐 English Summary
+English Summary
 
 **FloodVoice** is an open-source humanitarian tool designed to assist rescue teams and local disaster centers in monitoring and extracting flood distress signals from Thai social media videos, posts, and live streams (Facebook, Instagram, TikTok, and YouTube).
 
-### Key Features:
+Key Features:
 * **Audio & Frame Sampling:** Extracts audio streams and video keyframes via `yt-dlp` without downloading heavy video files.
 * **Water Level Severity Classification:** Automatic classification from Ankle (`LEVEL_1`), Knee (`LEVEL_2`), Waist (`LEVEL_3`), Chest/Neck (`LEVEL_4`), to Roof/Submerged (`LEVEL_5`).
 * **Specific Relief Needs Extraction:** Identifies critical items (chronic disease medications, infant milk formula, rescue boats, food & water, bedridden patient evacuation).
@@ -167,6 +167,6 @@ docker compose up -d --build
 
 ---
 
-## 📄 สัญญาอนุญาต (License)
+สัญญาอนุญาต (License)
 
 โปรเจกต์นี้เผยแพร่ภายใต้สัญญาอนุญาต [MIT License](LICENSE) ทุกคนสามารถนำไปใช้งาน แจกจ่าย และพัฒนาต่อยอดเพื่อสาธารณประโยชน์ได้อย่างอิสระ
