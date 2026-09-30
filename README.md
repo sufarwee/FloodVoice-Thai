@@ -1,18 +1,19 @@
-🌊 FloodVoice (เสียงน้ำท่วม)
+# 🌊 FloodVoice (เสียงน้ำท่วม)
 > **ระบบเฝ้าระวังและคัดกรองสัญญาณขอความช่วยเหลือเหตุน้ำท่วมจาก Social Media**  
 > *Open-Source Disaster Response Pipeline for Detecting Thai Flood Distress Signals*
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Version: 1.1.2](https://img.shields.io/badge/version-1.1.2-blue.svg)](https://github.com/sufarwee/FloodVoice-Thai/releases)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Docker Ready](https://img.shields.io/badge/Docker-Ready-green.svg)](https://www.docker.com/)
 
-**FloodVoice** คือเครื่องมือโอเพนซอร์สที่สร้างขึ้นเพื่อสนับสนุนการทำงานของ **ทีมกู้ภัย, ศูนย์สั่งการภัยพิบัติ, องค์กรปกครองส่วนท้องถิ่น และอาสาสมัคร** ในการค้นหาเสียงขอความช่วยเหลือของประชาชนที่โพสต์ผ่าน Social Media (Facebook, Instagram, TikTok และ YouTube) ทั้งในรูปแบบข้อความ, คลิปสั้น Reels/Shorts และ **Live ถ่ายทอดสด**
+**FloodVoice** คือเครื่องมือโอเพนซอร์สที่สร้างขึ้นเพื่อสนับสนุนการทำงานของ **ทีมกู้ภัย, ศูนย์สั่งการภัยพิบัติ, องค์กรปกครองส่วนท้องถิ่น และอาสาสมัคร** ในการค้นหาเสียงขอความช่วยเหลือของประชาชนที่โพสต์ผ่าน Social Media (Facebook, Instagram, TikTok, YouTube และ X/Twitter) ทั้งในรูปแบบข้อความ, คลิปสั้น Reels/Shorts และ **Live ถ่ายทอดสด**
 
 ระบบจะถอดเสียงพูดภาษาไทย สกัดระดับความสูงของน้ำ (ตาตุ่ม/เข่า/เอว/อก/คอ/มิดหลังคา) ระบุความต้องการฉุกเฉิน (ยาประจำตัว/นมเด็ก/เรือ/ผู้ป่วยติดเตียง) และจัดพิกัดตามมาตรฐานกรมการปกครอง (DOPA) เพื่อส่งต่อข้อมูลไปยัง **Google Sheets**, **Obsidian Markdown** และ **Telegram** ได้ทันท่วงที
 
 ---
 
-แผนผังการทำงาน (System Architecture)
+## 🗺️ แผนผังการทำงาน (System Architecture)
 
 ```mermaid
 flowchart TD
@@ -52,34 +53,35 @@ flowchart TD
 
 ---
 
-คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
+## 🔑 คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
 
 คัดลอกไฟล์ `.env.example` ไปเป็น `.env` ก่อนเริ่มใช้งาน:
 ```bash
 cp .env.example .env
 ```
 
-| ตัวแปรในไฟล์ `.env` | หน้าที่ / การใช้งาน | แหล่งที่มา / วิธีขอรับ | ความจำเป็น |
-| :--- | :--- | :--- | :--- |
-| **`GEMINI_API_KEY`** | วิเคราะห์ข้อความ เสียงพูดภาษาไทย และจัดระดับน้ำ | ขอฟรีได้ที่ [Google AI Studio](https://aistudio.google.com/) *(ไม่ต้องใช้บัตรเครดิต)* | **แนะนำเป็นหลัก** (ฟรี) |
-| **`OPENAI_API_KEY`** | ใช้ Whisper STT และโมเดล GPT ทางเลือก | [OpenAI Platform](https://platform.openai.com/api-keys) | ทางเลือกสำรอง |
-| **`DEFAULT_AI_PROVIDER`** | กำหนดตัววิเคราะห์หลัก (`gemini` หรือ `openai`) | ตั้งค่าเป็น `gemini` เป็นค่าเริ่มต้น | มีค่าเริ่มต้นอยู่แล้ว |
-| **`GOOGLE_SHEET_ID`** | รหัส Google Spreadsheet ที่ต้องการส่งข้อมูลลงตาราง | ดูจาก URL ของ Sheet: `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit` | แนะนำสำหรับทีมกู้ภัย |
-| **`GOOGLE_SERVICE_ACCOUNT_FILE`** | ไฟล์สิทธิ์เชื่อมต่อ Google Sheet (`service_account.json`) | สร้าง Service Account ใน Google Cloud Console แล้วแชร์ Sheet ให้อีเมลบอท | จำเป็นเมื่อใช้ Sheets |
-| **`TELEGRAM_BOT_TOKEN`** | โทเคนสำหรับส่งข้อความแจ้งเตือนเข้าแอป Telegram | ทักคุยกับ `@BotFather` ใน Telegram พิมพ์ `/newbot` | ทางเลือก |
-| **`TELEGRAM_CHAT_ID`** | ID ห้องแชตหรือกลุ่มกู้ภัยที่ต้องการให้บอทส่งข้อความ | ดึงบอทเข้ากลุ่ม แล้วดู chat id ผ่าน `https://api.telegram.org/bot<TOKEN>/getUpdates` | ทางเลือก |
-| **`YOUTUBE_API_KEY`** | ค้นหาวิดีโอและ Live Stream บน YouTube อัตโนมัติ | เปิดใช้งาน YouTube Data API v3 ฟรีที่ Google Cloud Console *(หากไม่ใส่ ระบบจะค้นหาผ่าน yt-dlp ให้อัตโนมัติ)* | ทางเลือก |
-| **`APIFY_TOKEN`** | ใช้ดึงฟีด Facebook และ TikTok ผ่าน Cloud Scraper | รับ Token ได้จาก [Apify.com](https://apify.com/) | ทางเลือก |
+| ตัวแปรในไฟล์ `.env` | หน้าที่การทำงาน | แหล่งที่มา / วิธีขอรับ |
+| :--- | :--- | :--- |
+| **`GEMINI_API_KEY`**<br>`⭐ แนะนำเป็นหลัก (ฟรี)` | วิเคราะห์ข้อความ แคปชัน เสียงพูดภาษาไทย และจัดระดับน้ำ | ขอฟรีได้ที่ [Google AI Studio](https://aistudio.google.com/) *(ไม่ต้องใช้บัตรเครดิต)* |
+| **`OPENAI_API_KEY`**<br>`(ทางเลือกสำรอง)` | ถอดเสียงด้วย Whisper STT และโมเดล GPT-4o-mini | ขอรับได้ที่ [OpenAI API Keys](https://platform.openai.com/api-keys) |
+| **`DEFAULT_AI_PROVIDER`**<br>`(ค่าเริ่มต้น: gemini)` | เลือกว่าจะใช้ระบบวิเคราะห์ตัวใดเป็นหลัก (`gemini` หรือ `openai`) | กำหนดในไฟล์ `.env` ได้เลย |
+| **`GOOGLE_SHEET_ID`**<br>`(แนะนำสำหรับกู้ภัย)` | รหัส Spreadsheet สำหรับส่งข้อมูลอัปเดตลงตาราง Real-time | ดูรหัสจาก URL ของ Google Sheet ที่สร้างไว้ |
+| **`GOOGLE_SERVICE_ACCOUNT_FILE`**<br>`(เมื่อใช้ Google Sheets)` | ไฟล์ Key สิทธิ์การเข้าถึง (`service_account.json`) | สร้าง Service Account ใน Google Cloud Console แล้วแชร์ Sheet ให้บอท |
+| **`TELEGRAM_BOT_TOKEN`**<br>`(ทางเลือกแจ้งเตือน)` | โทเคนบอทสำหรับยิงแจ้งเตือนเคสฉุกเฉิน | คุยกับ [@BotFather](https://t.me/BotFather) ใน Telegram พิมพ์ `/newbot` |
+| **`TELEGRAM_CHAT_ID`**<br>`(ทางเลือกแจ้งเตือน)` | ID ห้องแชตหรือกลุ่มกู้ภัยที่ต้องการรับแจ้งเตือน | ดึงบอทเข้ากลุ่ม แล้วเช็ก ID ผ่านคำสั่งบอท |
+| **`YOUTUBE_API_KEY`**<br>`(ทางเลือก)` | ค้นหา Live Stream และคลิปน้ำท่วมบน YouTube | เปิดใช้ YouTube Data API v3 ฟรี *(หากไม่ใส่ ระบบจะค้นหาผ่าน yt-dlp ให้อัตโนมัติ)* |
+| **`APIFY_TOKEN`**<br>`(สำหรับ FB, IG, TikTok, X)` | ดึงโพสต์และฟีดจาก Social Media 4 แพลตฟอร์ม | รับโทเคนฟรีได้จาก [Apify.com](https://apify.com/) *(มีฟรีเครดิต $5 ทุกเดือน)* |
 
-> [Note]
-> **เริ่มใช้งานได้ฟรี 100% ทันที:** เพียงคุณกรอก **`GEMINI_API_KEY`** เพียงตัวเดียว ระบบก็สามารถทำงานได้เต็มรูปแบบทั้งการสแกนและส่งออกผลลัพธ์เป็น Obsidian Markdown ในเครื่อง!
-> เนื่องจากปัจจุบัน API  Key บางอย่างจำกัดการเข้าถึง อย่างมากในการทำ Social Listening เช่น Tiitok Reaseach API , Meta Graph API ตัว CrowdTangle ก็ปืดตัวไปแล้ว จากการทดลองใช้จึงเลือกตัว Apify มาครับ เพื่อทดแทนการใช้งานผ่าน เจ้าใหญ่ๆของแทน ซึ่งไม่มีทดลองใช้ และ API ให้ บางเจ้าก็เช่ารายปี และราคาแพง
+
+> [!NOTE]
+> **เริ่มใช้งานได้ฟรี 100% ทันที:** เพียงคุณกรอก **`GEMINI_API_KEY`** เพียงตัวเดียว ระบบก็สามารถทำงานได้เต็มรูปแบบทั้งการสแกนและส่งออกผลลัพธ์เป็น Obsidian Markdown ในเครื่อง!  
+> เนื่องจากปัจจุบัน Official API บางอย่างจำกัดการเข้าถึงอย่างมากในการทำ Social Listening เช่น TikTok Research API หรือ Meta Graph API (และ CrowdTangle ปิดตัวแล้ว) ทางโปรเจกต์จึงเลือกต่อผ่าน **Apify** มาทดแทนเพื่อให้ใช้งานได้จริงโดยไม่ต้องจ่ายรายปีราคาแพง
 
 ---
 
-วิธีการติดตั้งและเริ่มใช้งาน
+## 🚀 วิธีการติดตั้งและเริ่มใช้งาน
 
-วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
+### วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
 
 1. **ดาวน์โหลดโปรเจกต์:**
    ```bash
