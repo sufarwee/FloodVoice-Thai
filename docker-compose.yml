@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  floodvoice-scanner:
+    build: .
+    container_name: floodvoice_node
+    restart: unless-stopped
+    env_file:
+      - .env
+    volumes:
+      # แมปไดเรกทอรี Obsidian และฐานข้อมูล SQLite ออกมาที่โฮสต์
+      - ./obsidian_vault:/app/obsidian_vault
+      - ./database:/app/database
+      - ./keywords.json:/app/keywords.json

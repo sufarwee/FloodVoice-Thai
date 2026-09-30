@@ -1,0 +1,21 @@
+# Core dependencies
+pydantic>=2.5.0
+python-dotenv>=1.0.0
+requests>=2.31.0
+
+# Media extraction (Audio & Video Frames from YouTube, TikTok, FB, IG)
+yt-dlp>=2024.8.6
+
+# AI Providers
+google-genai>=0.1.1
+openai>=1.30.0
+
+# Exporters & Storage
+gspread>=6.0.0
+google-auth>=2.27.0
+supabase>=2.0.0
+
+# Utilities & CLI
+click>=8.1.0
+rich>=13.7.0
+pytest>=8.0.0
