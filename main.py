@@ -18,6 +18,8 @@ from src.media.stream_sampler import StreamSampler
 from src.fetchers.youtube_live import YouTubeFetcher
 from src.fetchers.tiktok_feed import TikTokFetcher
 from src.fetchers.facebook_feed import FacebookFetcher
+from src.fetchers.x_feed import TwitterFetcher
+from src.fetchers.instagram_feed import InstagramFetcher
 from src.exporters.gsheets import GoogleSheetsExporter
 from src.exporters.obsidian import ObsidianExporter
 from src.exporters.telegram import TelegramDispatcher
@@ -105,6 +107,8 @@ def run_scanner_loop(interval_minutes: int = 15):
     yt_fetcher = YouTubeFetcher()
     tiktok_fetcher = TikTokFetcher()
     fb_fetcher = FacebookFetcher()
+    twitter_fetcher = TwitterFetcher()
+    ig_fetcher = InstagramFetcher()
 
     keywords = KEYWORDS_CONFIG.get("search_keywords", ["น้ำท่วม"])
     provinces = KEYWORDS_CONFIG.get("monitored_provinces", ["ปราจีนบุรี", "เชียงราย"])
@@ -126,15 +130,31 @@ def run_scanner_loop(interval_minutes: int = 15):
         for query_kws in search_queries:
             print(f">> กำลังค้นหาคีย์เวิร์ด: {' '.join(query_kws)}")
             
-            # ดึงจาก YouTube (รองรับ Live & Videos)
+            # 1. ดึงจาก YouTube (รองรับ Live & Videos)
             yt_items = yt_fetcher.search_by_keywords(query_kws, max_results=3)
             for item in yt_items:
                 if not local_store.is_url_seen(item.url):
                     process_single_item(item, analyzer, local_store, obsidian_exp, gsheets_exp, telegram_exp)
 
-            # ดึงจาก TikTok & Facebook (ถ้ามี API Token)
+            # 2. ดึงจาก X / Twitter (ถ้ามี API Token)
+            tw_items = twitter_fetcher.search_by_keywords(query_kws, max_results=3)
+            for item in tw_items:
+                if not local_store.is_url_seen(item.url):
+                    process_single_item(item, analyzer, local_store, obsidian_exp, gsheets_exp, telegram_exp)
+
+            # 3. ดึงจาก TikTok & Facebook & Instagram (ถ้ามี API Token)
             tt_items = tiktok_fetcher.search_by_keywords(query_kws, max_results=2)
             for item in tt_items:
+                if not local_store.is_url_seen(item.url):
+                    process_single_item(item, analyzer, local_store, obsidian_exp, gsheets_exp, telegram_exp)
+
+            fb_items = fb_fetcher.search_by_keywords(query_kws, max_results=2)
+            for item in fb_items:
+                if not local_store.is_url_seen(item.url):
+                    process_single_item(item, analyzer, local_store, obsidian_exp, gsheets_exp, telegram_exp)
+
+            ig_items = ig_fetcher.search_by_keywords(query_kws, max_results=2)
+            for item in ig_items:
                 if not local_store.is_url_seen(item.url):
                     process_single_item(item, analyzer, local_store, obsidian_exp, gsheets_exp, telegram_exp)
 
