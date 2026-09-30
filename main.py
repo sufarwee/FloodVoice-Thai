@@ -52,7 +52,7 @@ def process_single_item(
         if feed_item.is_live:
             combined_text += "\n[หมายเหตุ: รายการนี้กำลัง Live ถ่ายทอดสด]"
 
-        print("-> กำลังวิเคราะห์ข้อมูลมัลติโมดอลด้วย AI...")
+        print("-> กำลังประมวลผลและสกัดข้อมูลผู้ประสบภัย...")
         report = analyzer.analyze(
             text_content=combined_text,
             audio_path=audio_path,
@@ -142,7 +142,7 @@ def run_scanner_loop(interval_minutes: int = 15):
         time.sleep(interval_minutes * 60)
 
 def main():
-    parser = argparse.ArgumentParser(description="FloodVoice: AI Flood Distress Monitor from Social Media")
+    parser = argparse.ArgumentParser(description="FloodVoice: Social Media Flood Distress Monitor")
     parser.add_argument("--scan", action="store_true", help="เริ่มวนลูปสแกน Social Media อัตโนมัติ")
     parser.add_argument("--interval", type=int, default=15, help="ระยะเวลาห่างแต่ละรอบ (นาที)")
     parser.add_argument("--test-url", type=str, help="ทดสอบประมวลผล URL วิดีโอ/Live โดยตรง 1 รายการ")
@@ -161,7 +161,7 @@ def main():
         print("กำลังทดสอบวิเคราะห์ข้อความ:")
         print(f"Input: {args.test_text}\n")
         report = analyzer.analyze(args.test_text)
-        print("ผลลัพธ์จาก AI:")
+        print("ผลลัพธ์การคัดกรองข้อมูล:")
         print(report.model_dump_json(indent=2))
 
     elif args.test_url:

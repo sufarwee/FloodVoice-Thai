@@ -1,81 +1,129 @@
-# 🌊 FloodVoice (เสียงน้ำท่วม): AI เฝ้าระวังและคัดกรองภัยพิบัติน้ำท่วมจาก Social Media
+# 🌊 FloodVoice (เสียงน้ำท่วม)
+> **ระบบเฝ้าระวังและคัดกรองสัญญาณขอความช่วยเหลือเหตุน้ำท่วมจาก Social Media**  
+> *Open-Source Disaster Response Pipeline for Detecting Thai Flood Distress Signals*
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
-[![Docker Ready](https://img.shields.io/badge/docker-ready-green.svg)](https://www.docker.com/)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![Docker Ready](https://img.shields.io/badge/Docker-Ready-green.svg)](https://www.docker.com/)
 
-**FloodVoice** เป็นเครื่องมือ Open-Source สำหรับศูนย์สั่งการกู้ภัย, หน่วยงานท้องถิ่น, และจิตอาสา เพื่อคอยเฝ้าระวังและคัดกรองสัญญาณขอความช่วยเหลือเหตุน้ำท่วมจาก Social Media 4 แพลตฟอร์มหลัก: **Facebook, Instagram, TikTok และ YouTube** (รองรับทั้งข้อความ, คลิปสั้น Reels/Shorts, และ **Live Stream สด**)
+**FloodVoice** คือเครื่องมือโอเพนซอร์สที่สร้างขึ้นเพื่อสนับสนุนการทำงานของ **ทีมกู้ภัย, ศูนย์สั่งการภัยพิบัติ, องค์กรปกครองส่วนท้องถิ่น และอาสาสมัคร** ในการค้นหาเสียงขอความช่วยเหลือของประชาชนที่โพสต์ผ่าน Social Media (Facebook, Instagram, TikTok และ YouTube) ทั้งในรูปแบบข้อความ, คลิปสั้น Reels/Shorts และ **Live ถ่ายทอดสด**
 
-ระบบใช้ AI Multimodal (Google Gemini / OpenAI Whisper) ในการ**ถอดเสียงพูดภาษาไทย**, **ประเมินระดับความสูงของน้ำ (ตาตุ่ม/เข่า/เอว/อก/คอ/มิดหลังคา)**, **สกัดรายการสิ่งของจำเป็นเร่งด่วน (ยา/นมเด็ก/เรือ/ผู้ป่วยติดเตียง)** และจัดส่งข้อมูลตรงเข้า **Google Sheets** และ **Obsidian Dashboard** แบบอัตโนมัติ
-
----
-
-## 🎯 ความสามารถหลัก (Key Features)
-
-1. **ดึงข้อมูลมัลติมีเดียและ Live Stream:** ใช้ `yt-dlp` และ search engine สกัดแทร็กเสียงและภาพคีย์เฟรมจากวิดีโอ/Live โดยไม่ต้องดาวน์โหลดไฟล์วิดีโอขนาดใหญ่ ประหยัด Bandwidth สูงสุด
-2. **จัดระดับความสูงของน้ำ (Water Level Severity):**
-   * `LEVEL_1_LOW`: น้ำท่วมขังระดับตาตุ่ม/ข้อเท้า
-   * `LEVEL_2_MEDIUM`: น้ำระดับหัวเข่า (เริ่มเข้าใต้ถุนบ้าน)
-   * `LEVEL_3_HIGH`: น้ำระดับเอว (มิดล้อรถ/ไฟฟ้าถูกตัด)
-   * `LEVEL_4_CRITICAL`: น้ำระดับอก ถึง ระดับคอ (น้ำเชี่ยว/ต้องใช้เรือเท่านั้น)
-   * `LEVEL_5_EMERGENCY`: มิดหัว/มิดชั้น 1/อยู่บนหลังคา/ผู้ป่วยติดเตียงติดค้าง (**ด่วนที่สุด**)
-3. **ตรวจจับความต้องการเฉพาะทาง (Specific Needs):** ระบุ ยาประจำตัว (เบาหวาน/ความดัน), นมผงเด็กอ่อน, อาหารแห้ง/น้ำดื่ม, เรืออพยพ, ผู้ป่วยติดเตียง
-4. **มาตรฐานพิกัดกรมการปกครอง (DOPA Normalizer):** แยกจังหวัด, อำเภอ/เขต, ตำบล/แขวง, หมู่ที่, ชุมชน, ซอย, จุดสังเกต
-5. **แสดงผลแบบที่กู้ภัยใช้งานได้ทันที (Ready-to-Use Outputs):**
-   * **Google Sheets Real-time:** อัปเดตข้อมูลเป็นแถวใหม่ทันที ทีมกู้ภัยเปิดดูจากมือถือและกดอัปเดตสถานะเคสได้เลย
-   * **Obsidian Markdown Dashboard:** บันทึกเป็นการ์ดสรุปสถานการณ์รายเคส พร้อมตารางสรุปรวมรายวัน
-   * **Telegram Alert Bot:** ยิงข้อความแจ้งเตือนด่วนเข้ากลุ่มกู้ภัยประจำพื้นที่
+ระบบจะถอดเสียงพูดภาษาไทย สกัดระดับความสูงของน้ำ (ตาตุ่ม/เข่า/เอว/อก/คอ/มิดหลังคา) ระบุความต้องการฉุกเฉิน (ยาประจำตัว/นมเด็ก/เรือ/ผู้ป่วยติดเตียง) และจัดพิกัดตามมาตรฐานกรมการปกครอง (DOPA) เพื่อส่งต่อข้อมูลไปยัง **Google Sheets**, **Obsidian Markdown** และ **Telegram** ได้ทันท่วงที
 
 ---
 
-## 🚀 เริ่มต้นใช้งานอย่างรวดเร็ว (Quickstart)
+## 🗺️ แผนผังการทำงาน (System Architecture)
 
-### วิธีที่ 1: รันบนคอมพิวเตอร์ด้วย Python
+```mermaid
+flowchart TD
+    subgraph Sources["1. แหล่งข้อมูล Social Media"]
+        FB["Facebook (Posts & Reels)"]
+        TT["TikTok (Videos & Hashtags)"]
+        YT["YouTube (Live Stream & Videos)"]
+        IG["Instagram (Reels)"]
+    end
 
-1. **โคลน Repository:**
+    subgraph Ingestion["2. ดึงข้อมูลและตัดเสียง"]
+        YTDL["yt-dlp Engine\n(สกัดเสียง .mp3 + เฟรมภาพ โดยไม่โหลดไฟล์วิดีโอเต็ม)"]
+    end
+
+    subgraph Processing["3. ประมวลผลและจำแนกข้อมูล"]
+        STT["ถอดเสียงพูดภาษาไทย (Thai Speech-to-Text)"]
+        WL["จัดระดับความสูงของน้ำ (ตาตุ่ม/เข่า/เอว/อก/คอ/หลังคา)"]
+        Needs["คัดกรองสิ่งของจำเป็น (ยา/นมเด็ก/เรือ/ผู้ป่วย)"]
+        DOPA["ปรับพิกัดตามมาตรฐานกรมการปกครอง (DOPA)"]
+    end
+
+    subgraph Out["4. ปลายทางสำหรับทีมกู้ภัย"]
+        GS["Google Sheets\n(กู้ภัยเปิดดูบนมือถือ + Dropdown รับงาน)"]
+        OB["Obsidian Markdown\n(การ์ดเหตุการณ์ + ตารางสรุปรายวัน)"]
+        TG["Telegram Alert\n(ยิงแจ้งเตือนเข้าห้องกู้ภัยประจำพื้นที่)"]
+    end
+
+    Sources --> YTDL
+    YTDL --> STT
+    STT --> WL
+    WL --> Needs
+    Needs --> DOPA
+    DOPA --> GS
+    DOPA --> OB
+    DOPA --> TG
+```
+
+---
+
+## 🔑 คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
+
+คัดลอกไฟล์ `.env.example` ไปเป็น `.env` ก่อนเริ่มใช้งาน:
+```bash
+cp .env.example .env
+```
+
+| ตัวแปรในไฟล์ `.env` | หน้าที่ / การใช้งาน | แหล่งที่มา / วิธีขอรับ | ความจำเป็น |
+| :--- | :--- | :--- | :--- |
+| **`GEMINI_API_KEY`** | วิเคราะห์ข้อความ เสียงพูดภาษาไทย และจัดระดับน้ำ | ขอฟรีได้ที่ [Google AI Studio](https://aistudio.google.com/) *(ไม่ต้องใช้บัตรเครดิต)* | **แนะนำเป็นหลัก** (ฟรี) |
+| **`OPENAI_API_KEY`** | ใช้ Whisper STT และโมเดล GPT ทางเลือก | [OpenAI Platform](https://platform.openai.com/api-keys) | ทางเลือกสำรอง |
+| **`DEFAULT_AI_PROVIDER`** | กำหนดตัววิเคราะห์หลัก (`gemini` หรือ `openai`) | ตั้งค่าเป็น `gemini` เป็นค่าเริ่มต้น | มีค่าเริ่มต้นอยู่แล้ว |
+| **`GOOGLE_SHEET_ID`** | รหัส Google Spreadsheet ที่ต้องการส่งข้อมูลลงตาราง | ดูจาก URL ของ Sheet: `https://docs.google.com/spreadsheets/d/<SHEET_ID>/edit` | แนะนำสำหรับทีมกู้ภัย |
+| **`GOOGLE_SERVICE_ACCOUNT_FILE`** | ไฟล์สิทธิ์เชื่อมต่อ Google Sheet (`service_account.json`) | สร้าง Service Account ใน Google Cloud Console แล้วแชร์ Sheet ให้อีเมลบอท | จำเป็นเมื่อใช้ Sheets |
+| **`TELEGRAM_BOT_TOKEN`** | โทเคนสำหรับส่งข้อความแจ้งเตือนเข้าแอป Telegram | ทักคุยกับ `@BotFather` ใน Telegram พิมพ์ `/newbot` | ทางเลือก |
+| **`TELEGRAM_CHAT_ID`** | ID ห้องแชตหรือกลุ่มกู้ภัยที่ต้องการให้บอทส่งข้อความ | ดึงบอทเข้ากลุ่ม แล้วดู chat id ผ่าน `https://api.telegram.org/bot<TOKEN>/getUpdates` | ทางเลือก |
+| **`YOUTUBE_API_KEY`** | ค้นหาวิดีโอและ Live Stream บน YouTube อัตโนมัติ | เปิดใช้งาน YouTube Data API v3 ฟรีที่ Google Cloud Console *(หากไม่ใส่ ระบบจะค้นหาผ่าน yt-dlp ให้อัตโนมัติ)* | ทางเลือก |
+| **`APIFY_TOKEN`** | ใช้ดึงฟีด Facebook และ TikTok ผ่าน Cloud Scraper | รับ Token ได้จาก [Apify.com](https://apify.com/) | ทางเลือก |
+
+> [!TIP]
+> **เริ่มใช้งานได้ฟรี 100% ทันที:** เพียงคุณกรอก **`GEMINI_API_KEY`** เพียงตัวเดียว ระบบก็สามารถทำงานได้เต็มรูปแบบทั้งการสแกนและส่งออกผลลัพธ์เป็น Obsidian Markdown ในเครื่อง!
+
+---
+
+## 🚀 วิธีการติดตั้งและเริ่มใช้งาน
+
+### วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
+
+1. **ดาวน์โหลดโปรเจกต์:**
    ```bash
    git clone https://github.com/sufarwee/FloodVoice-Thai.git
    cd FloodVoice-Thai
    ```
 
-2. **ติดตั้ง Dependencies:**
-   *(จำเป็นต้องมี `ffmpeg` ในเครื่องสำหรับประมวลผลเสียง เช่น `brew install ffmpeg` บน Mac หรือ `sudo apt install ffmpeg` บน Ubuntu)*
+2. **ติดตั้งไลบรารี:**
+   *(เครื่องของคุณต้องมี `ffmpeg` สำหรับประมวลผลเสียง เช่น บน Mac รัน `brew install ffmpeg` หรือบน Ubuntu รัน `sudo apt install ffmpeg`)*
    ```bash
    pip install -r requirements.txt
    ```
 
-3. **ตั้งค่า API Key ในไฟล์ `.env`:**
-   ```bash
-   cp .env.example .env
-   ```
-   เปิดไฟล์ `.env` แล้วกรอก **`GEMINI_API_KEY`** (ขอฟรีได้ที่ [Google AI Studio](https://aistudio.google.com/) โดยไม่ต้องใช้บัตรเครดิต)
+3. **แก้ไขไฟล์ `.env`:**
+   เปิดไฟล์ `.env` แล้วใส่ `GEMINI_API_KEY` ของคุณ
 
-4. **สั่งรันระบบ:**
+4. **คำสั่งสั่งรัน:**
    ```bash
-   # เริ่มระบบสแกนและเฝ้าระวังอัตโนมัติ
-   python main.py --scan
+   # 1. ทดสอบการจำแนกข้อความ
+   python3 main.py --test-text "ช่วยด้วยครับ ตอนนี้น้ำท่วมถึงอก ม.3 ต.กบินทร์ อ.กบินทร์บุรี ปราจีนบุรี ติดอยู่ 4 คน ต้องการเรือและอาหารด่วน"
 
-   # หรือทดสอบข้อความตัวอย่าง
-   python main.py --test-text "ช่วยด้วยครับ น้ำท่วมถึงอก ม.3 ต.กบินทร์ อ.กบินทร์บุรี ปราจีนบุรี ติดอยู่ 4 คน ขอน้ำดื่มและเรือด่วน"
+   # 2. ทดสอบดึงเสียงและประมวลผลจากลิงก์วิดีโอ/Live โดยตรง
+   python3 main.py --test-url https://www.youtube.com/watch?v=xxxx
+
+   # 3. เริ่มระบบสแกน Social Media อัตโนมัติ (วนลูปทุก 15 นาที)
+   python3 main.py --scan
    ```
 
 ---
 
-### วิธีที่ 2: รันผ่าน Docker (คำสั่งเดียว)
+### วิธีที่ 2: รันผ่าน Docker (คลิกเดียว ไม่ต้องลงโปรแกรมเพิ่ม)
 
-ไม่ต้องติดตั้ง Python หรือ ffmpeg เอง:
+เหมาะสำหรับเปิดทิ้งไว้บน Server ตลอด 24 ชั่วโมง:
 ```bash
 cp .env.example .env
-# กรอก GEMINI_API_KEY ใน .env
+# กรอก GEMINI_API_KEY ในไฟล์ .env
 docker compose up -d --build
 ```
-ระบบจะรันเป็น Background Service คอยสแกนข้อมูลและบันทึกลงโฟลเดอร์ `obsidian_vault` ให้ตลอด 24 ชั่วโมง
+ระบบจะเปิดบริการเฝ้าระวังอัตโนมัติ โดยไฟล์ผลลัพธ์การ์ด Markdown จะถูกบันทึกไว้ที่โฟลเดอร์ `./obsidian_vault` บนเครื่องของคุณ
 
 ---
 
-## ⚙️ การกำหนดค่าคำค้นหาและจังหวัดเป้าหมาย (`keywords.json`)
+## 🎯 การปรับแต่งคำค้นหาและจังหวัด (`keywords.json`)
 
-คุณสามารถปรับแต่งจังหวัดที่ต้องการเฝ้าระวังและคำค้นหาได้โดยตรงที่ไฟล์ `keywords.json`:
+คุณสามารถระบุจังหวัดที่ต้องการเฝ้าระวังหรือคำค้นเฉพาะถิ่นได้ที่ไฟล์ `keywords.json`:
 
 ```json
 {
@@ -97,22 +145,28 @@ docker compose up -d --build
 
 ---
 
-## 📊 ตัวอย่างโครงสร้างข้อมูลใน Google Sheets & Obsidian
+## 📊 ตัวอย่างผลลัพธ์ใน Google Sheets & Obsidian
 
-| ระดับความด่วน | ระดับน้ำ | จังหวัด | อำเภอ/เขต | ตำบล/แขวง | สิ่งที่ต้องการ | กลุ่มเสี่ยง | ลิงก์ต้นทาง |
+| ความเร่งด่วน | ระดับน้ำ | จังหวัด | อำเภอ/เขต | ตำบล/แขวง | สิ่งที่ต้องการด่วน | เบอร์ติดต่อ | ลิงก์ต้นทาง |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| 🚨 CRITICAL | ระดับอก | ปราจีนบุรี | กบินทร์บุรี | กบินทร์ | เรือพาย, นมเด็ก, น้ำดื่ม | ผู้ใหญ่ 3 เด็ก 1 | [ดูคลิป TikTok] |
-| 🔴 HIGH | ระดับเอว | เชียงราย | แม่สาย | เวียงพางคำ | ข้าวกล่อง, ยาความดัน | คนชรา 2 คน | [ดู Live สด] |
+| 🚨 CRITICAL | ระดับอก | ปราจีนบุรี | กบินทร์บุรี | กบินทร์ | เรือพาย, นมเด็ก, น้ำดื่ม | 081-xxx-xxxx | [ดูคลิป] |
+| 🔴 HIGH | ระดับเอว | เชียงราย | แม่สาย | เวียงพางคำ | ข้าวกล่อง, ยาประจำตัว | 089-xxx-xxxx | [ดู Live สด] |
 
 ---
 
-## 🤝 ร่วมพัฒนา (Contributing)
+## 🌐 English Summary
 
-ยินดีต้อนรับทุกการร่วมพัฒนาเพื่อช่วยเหลือผู้ประสบภัย:
-* เพิ่มตัว Scraper สำหรับแพลตฟอร์มหรือกลุ่มเฉพาะ
-* ปรับแต่ง Prompt ภาษาถิ่น (ภาษาใต้, คำเมือง, ภาษาอีสาน)
-* พัฒนาหน้าเว็บ Dashboard สำหรับศูนย์สั่งการ
+**FloodVoice** is an open-source humanitarian tool designed to assist rescue teams and local disaster centers in monitoring and extracting flood distress signals from Thai social media videos, posts, and live streams (Facebook, Instagram, TikTok, and YouTube).
 
-## 📄 ใบอนุญาต (License)
+### Key Features:
+* **Audio & Frame Sampling:** Extracts audio streams and video keyframes via `yt-dlp` without downloading heavy video files.
+* **Water Level Severity Classification:** Automatic classification from Ankle (`LEVEL_1`), Knee (`LEVEL_2`), Waist (`LEVEL_3`), Chest/Neck (`LEVEL_4`), to Roof/Submerged (`LEVEL_5`).
+* **Specific Relief Needs Extraction:** Identifies critical items (chronic disease medications, infant milk formula, rescue boats, food & water, bedridden patient evacuation).
+* **DOPA Administrative Normalization:** Matches informal addresses to official Thai administrative structures (Province, District, Subdistrict).
+* **Ready-to-Use Outputs:** Real-time sync to Google Sheets, Obsidian Markdown event cards, and Telegram group dispatching.
 
-โปรเจกต์นี้เผยแพร่ภายใต้สัญญาอนุญาต [MIT License](LICENSE) สามารถนำไปใช้งาน ปรับแต่ง และส่งต่อเพื่อสาธารณประโยชน์ได้อย่างอิสระ
+---
+
+## 📄 สัญญาอนุญาต (License)
+
+โปรเจกต์นี้เผยแพร่ภายใต้สัญญาอนุญาต [MIT License](LICENSE) ทุกคนสามารถนำไปใช้งาน แจกจ่าย และพัฒนาต่อยอดเพื่อสาธารณประโยชน์ได้อย่างอิสระ

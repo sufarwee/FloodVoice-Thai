@@ -6,9 +6,9 @@ from typing import Optional, List, Dict, Any
 from config import GEMINI_API_KEY, OPENAI_API_KEY, DEFAULT_AI_PROVIDER
 from .schemas import DistressReport, NormalizedLocation, UrgencyLevel, WaterLevelCode
 
-ANALYZER_SYSTEM_PROMPT = """คุณคือ AI ผู้เชี่ยวชาญการประเมินภัยพิบัติน้ำท่วมสำหรับศูนย์สั่งการกู้ภัยไทย (Flood Emergency AI Analyst)
+ANALYZER_SYSTEM_PROMPT = """ระบบวิเคราะห์และคัดกรองข้อมูลภัยพิบัติน้ำท่วมสำหรับศูนย์ประสานงานกู้ภัย (Flood Emergency Data Analyst)
 
-หน้าที่ของคุณ:
+หน้าที่ของระบบ:
 วิเคราะห์ข้อความ แคปชัน เสียงพูดที่ถอดได้ และภาพจากคลิปวิดีโอ/Live เพื่อสกัดข้อมูลผู้ประสบภัยอย่างแม่นยำ
 
 กฎเกณฑ์สำคัญในการวิเคราะห์:
@@ -43,21 +43,22 @@ class MultimodalAnalyzer:
         self._init_clients()
 
     def _init_clients(self):
-        # 1. Init Gemini Client if key available
+        # 1. เชื่อมต่อ Gemini SDK เมื่อมี API Key
         if GEMINI_API_KEY:
             try:
                 from google import genai
                 self.gemini_client = genai.Client(api_key=GEMINI_API_KEY)
-            except Exception as e:
-                print(f"Note: google-genai client init note: {e}")
+            except Exception:
+                pass
 
-        # 2. Init OpenAI Client if key available
+        # 2. เชื่อมต่อ OpenAI SDK เมื่อมี API Key
         if OPENAI_API_KEY:
             try:
                 from openai import OpenAI
                 self.openai_client = OpenAI(api_key=OPENAI_API_KEY)
-            except Exception as e:
-                print(f"Note: openai client init note: {e}")
+            except Exception:
+                pass
+
 
     def analyze(
         self,
