@@ -17,10 +17,10 @@
 ```mermaid
 flowchart TD
     subgraph Sources["1. แหล่งข้อมูล Social Media"]
-        FB["Facebook (Posts & Reels)"]
+        FB["Facebook / IG (Posts & Reels)"]
         TT["TikTok (Videos & Hashtags)"]
         YT["YouTube (Live Stream & Videos)"]
-        IG["Instagram (Reels)"]
+        X["X (Twitter)"]
     end
 
     subgraph Ingestion["2. ดึงข้อมูลและตัดเสียง"]
@@ -151,6 +151,7 @@ docker compose up -d --build
 | ความเร่งด่วน | ระดับน้ำ | จังหวัด | อำเภอ/เขต | ตำบล/แขวง | สิ่งที่ต้องการด่วน | เบอร์ติดต่อ | ลิงก์ต้นทาง |
 
 | 🔴 CRITICAL | ระดับอก | ปราจีนบุรี | กบินทร์บุรี | กบินทร์ | เรือพาย, นมเด็ก, น้ำดื่ม | 081-xxx-xxxx | [ดูคลิป] |
+
 | 🔴 HIGH | ระดับเอว | เชียงราย | แม่สาย | เวียงพางคำ | ข้าวกล่อง, ยาประจำตัว | 089-xxx-xxxx | [ดู Live สด] |
 
 ---
