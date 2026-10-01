@@ -1,4 +1,4 @@
-# 🌊 FloodVoice (เสียงน้ำท่วม)
+🌊 FloodVoice (เสียงน้ำท่วม)
 > **ระบบเฝ้าระวังและคัดกรองสัญญาณขอความช่วยเหลือเหตุน้ำท่วมจาก Social Media**  
 > *Open-Source Disaster Response Pipeline for Detecting Thai Flood Distress Signals*
 
@@ -13,7 +13,7 @@
 
 ---
 
-## 🗺️ แผนผังการทำงาน (System Architecture)
+🗺️ แผนผังการทำงาน (System Architecture)
 
 ```mermaid
 flowchart TD
@@ -53,7 +53,7 @@ flowchart TD
 
 ---
 
-## 🔑 คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
+คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
 
 คัดลอกไฟล์ `.env.example` ไปเป็น `.env` ก่อนเริ่มใช้งาน:
 ```bash
@@ -101,9 +101,9 @@ cp .env.example .env
 
 ---
 
-## 🚀 วิธีการติดตั้งและเริ่มใช้งาน
+วิธีการติดตั้งและเริ่มใช้งาน
 
-### วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
+วิธีที่ 1: รันบนเครื่องคอมพิวเตอร์ด้วย Python
 
 1. **ดาวน์โหลดโปรเจกต์:**
    ```bash
