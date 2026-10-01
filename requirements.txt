@@ -6,9 +6,11 @@ requests>=2.31.0
 # Media extraction (Audio & Video Frames from YouTube, TikTok, FB, IG)
 yt-dlp>=2024.8.6
 
-# AI Providers
+# AI Providers & Speech-to-Text
 google-genai>=0.1.1
 openai>=1.30.0
+faster-whisper>=1.0.0
+
 
 # Exporters & Storage
 gspread>=6.0.0

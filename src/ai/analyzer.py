@@ -123,6 +123,40 @@ class MultimodalAnalyzer:
         data = json.loads(response.text)
         return DistressReport(**data)
 
+    def transcribe_audio(self, audio_path: str) -> str:
+        """ถอดเสียงพูดภาษาไทย รองรับทั้ง Local Mac Whisper (ออฟไลน์) และ OpenAI Whisper API"""
+        if not audio_path or not os.path.exists(audio_path):
+            return ""
+
+        from config import WHISPER_MODE, LOCAL_WHISPER_MODEL
+
+        # 1. ถ้าเลือกโหมด Local (Mac Whisper) ให้รันในเครื่องฟรี 100%
+        if WHISPER_MODE == "local":
+            try:
+                from .local_whisper import transcribe_local_mac
+                print(f"-> กำลังถอดเสียงด้วย Local Mac Whisper (โมเดล: {LOCAL_WHISPER_MODEL})...")
+                text = transcribe_local_mac(audio_path, model_size=LOCAL_WHISPER_MODEL)
+                if text:
+                    return text
+            except Exception as e:
+                print(f"Local Whisper note: {e}, falling back to API if available...")
+
+        # 2. ถอดเสียงผ่าน OpenAI Whisper API (ถ้ามี Client)
+        if self.openai_client:
+            try:
+                print("-> กำลังถอดเสียงผ่าน OpenAI Whisper API (whisper-1)...")
+                with open(audio_path, "rb") as f:
+                    tr = self.openai_client.audio.transcriptions.create(
+                        model="whisper-1",
+                        file=f,
+                        language="th"
+                    )
+                    return tr.text or ""
+            except Exception as e:
+                print(f"OpenAI Whisper API error: {e}")
+
+        return ""
+
     def _analyze_with_openai(
         self,
         text_content: str,
@@ -130,16 +164,11 @@ class MultimodalAnalyzer:
     ) -> DistressReport:
         combined_text = text_content
 
-        # ถอดเสียงด้วย Whisper ถ้ามีไฟล์เสียง
+        # ถอดเสียงด้วย Whisper (รองรับทั้ง Local และ API)
         if audio_path and os.path.exists(audio_path):
-            with open(audio_path, "rb") as f:
-                tr = self.openai_client.audio.transcriptions.create(
-                    model="whisper-1",
-                    file=f,
-                    language="th"
-                )
-                if tr.text:
-                    combined_text += f"\n[เสียงพูดในวิดีโอ]: {tr.text}"
+            transcript = self.transcribe_audio(audio_path)
+            if transcript:
+                combined_text += f"\n[เสียงพูดในวิดีโอ]: {transcript}"
 
         completion = self.openai_client.beta.chat.completions.parse(
             model="gpt-4o-mini",

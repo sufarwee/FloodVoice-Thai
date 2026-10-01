@@ -2,7 +2,7 @@
 > **ระบบเฝ้าระวังและคัดกรองสัญญาณขอความช่วยเหลือเหตุน้ำท่วมจาก Social Media**  
 > *Open-Source Disaster Response Pipeline for Detecting Thai Flood Distress Signals*
 
-[![Version: 1.1.2](https://img.shields.io/badge/version-1.1.2-blue.svg)](https://github.com/sufarwee/FloodVoice-Thai/releases)
+[![Version: 1.2.0](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/sufarwee/FloodVoice-Thai/releases)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
 [![Docker Ready](https://img.shields.io/badge/Docker-Ready-green.svg)](https://www.docker.com/)
@@ -63,7 +63,9 @@ cp .env.example .env
 | ตัวแปรในไฟล์ `.env` | หน้าที่การทำงาน | แหล่งที่มา / วิธีขอรับ |
 | :--- | :--- | :--- |
 | **`GEMINI_API_KEY`**<br>`⭐ แนะนำเป็นหลัก (ฟรี)` | วิเคราะห์ข้อความ แคปชัน เสียงพูดภาษาไทย และจัดระดับน้ำ | ขอฟรีได้ที่ [Google AI Studio](https://aistudio.google.com/) *(ไม่ต้องใช้บัตรเครดิต)* |
-| **`OPENAI_API_KEY`**<br>`(ทางเลือกสำรอง)` | ถอดเสียงด้วย Whisper STT และโมเดล GPT-4o-mini | ขอรับได้ที่ [OpenAI API Keys](https://platform.openai.com/api-keys) |
+| **`WHISPER_MODE`**<br>`("api" หรือ "local")` | เลือกระบบถอดเสียง: `local` (Mac Whisper ฟรีในเครื่อง) หรือ `api` (OpenAI Whisper) | กำหนดใน `.env` (ค่าเริ่มต้น: `api`) |
+| **`LOCAL_WHISPER_MODEL`**<br>`(ค่าเริ่มต้น: "base")` | ขนาดโมเดล Local Mac Whisper: `tiny`, `base`, `small`, `medium` | โหลดอัตโนมัติเมื่อตั้งโหมด `local` |
+| **`OPENAI_API_KEY`**<br>`(เมื่อใช้ Whisper API)` | ถอดเสียงด้วย OpenAI Whisper-1 และโมเดล GPT-4o-mini | ขอรับได้ที่ [OpenAI API Keys](https://platform.openai.com/api-keys) |
 | **`DEFAULT_AI_PROVIDER`**<br>`(ค่าเริ่มต้น: gemini)` | เลือกว่าจะใช้ระบบวิเคราะห์ตัวใดเป็นหลัก (`gemini` หรือ `openai`) | กำหนดในไฟล์ `.env` ได้เลย |
 | **`GOOGLE_SHEET_ID`**<br>`(แนะนำสำหรับกู้ภัย)` | รหัส Spreadsheet สำหรับส่งข้อมูลอัปเดตลงตาราง Real-time | ดูรหัสจาก URL ของ Google Sheet ที่สร้างไว้ |
 | **`GOOGLE_SERVICE_ACCOUNT_FILE`**<br>`(เมื่อใช้ Google Sheets)` | ไฟล์ Key สิทธิ์การเข้าถึง (`service_account.json`) | สร้าง Service Account ใน Google Cloud Console แล้วแชร์ Sheet ให้บอท |
@@ -76,6 +78,26 @@ cp .env.example .env
 > [!NOTE]
 > **เริ่มใช้งานได้ฟรี 100% ทันที:** เพียงคุณกรอก **`GEMINI_API_KEY`** เพียงตัวเดียว ระบบก็สามารถทำงานได้เต็มรูปแบบทั้งการสแกนและส่งออกผลลัพธ์เป็น Obsidian Markdown ในเครื่อง!  
 > เนื่องจากปัจจุบัน Official API บางอย่างจำกัดการเข้าถึงอย่างมากในการทำ Social Listening เช่น TikTok Research API หรือ Meta Graph API (และ CrowdTangle ปิดตัวแล้ว) ทางโปรเจกต์จึงเลือกต่อผ่าน **Apify** มาทดแทนเพื่อให้ใช้งานได้จริงโดยไม่ต้องจ่ายรายปีราคาแพง
+
+---
+
+## 🎙️ ตัวเลือกระบบถอดเสียงภาษาไทย (OpenAI Whisper vs Mac Whisper)
+
+ระบบรองรับระบบถอดเสียงภาษาไทย 2 รูปแบบตามความสะดวกของเครื่องคุณ:
+
+1. **Mac Whisper (Local Offline ในเครื่อง Mac/PC):**
+   * **จุดเด่น:** **ฟรี 100% ตลอดชีพ** ไม่เสียค่า API สักบาท และทำงานแบบออฟไลน์ไม่ต้องต่อเน็ต ใช้พลังประมวลผลของ CPU / Apple Silicon (M1/M2/M3/M4) ได้เต็มที่
+   * **วิธีเปิดใช้งาน:** 
+     1. ติดตั้งไลบรารี: `pip install faster-whisper`
+     2. ใน `.env` ตั้งค่า:
+        ```env
+        WHISPER_MODE=local
+        LOCAL_WHISPER_MODEL=base
+        ```
+2. **OpenAI Whisper API (`whisper-1`):**
+   * **จุดเด่น:** ไม่กินสเปกเครื่อง เหมาะสำหรับเครื่องเซิร์ฟเวอร์ขนาดเล็ก หรือรันบน Docker
+   * **วิธีเปิดใช้งาน:** ใส่ `OPENAI_API_KEY` ใน `.env` และตั้ง `WHISPER_MODE=api`
+
 
 ---
 

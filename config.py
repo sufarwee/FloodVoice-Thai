@@ -10,10 +10,15 @@ except ImportError:
 
 BASE_DIR = Path(__file__).resolve().parent
 
-# --- AI Configuration ---
+# --- AI & Transcription Configuration ---
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "").strip()
 DEFAULT_AI_PROVIDER = os.getenv("DEFAULT_AI_PROVIDER", "gemini").strip().lower()
+
+# Whisper Mode: "api" (OpenAI Whisper API) หรือ "local" (Mac / Local Faster-Whisper ฟรีในเครื่อง)
+WHISPER_MODE = os.getenv("WHISPER_MODE", "api").strip().lower()
+LOCAL_WHISPER_MODEL = os.getenv("LOCAL_WHISPER_MODEL", "base").strip().lower()
+
 
 # --- Database & Storage ---
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").strip()
