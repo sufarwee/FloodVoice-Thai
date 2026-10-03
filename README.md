@@ -38,7 +38,7 @@ flowchart TD
     subgraph Out["4. ปลายทางสำหรับทีมกู้ภัย"]
         GS["Google Sheets\n(กู้ภัยเปิดดูบนมือถือ + Dropdown รับงาน)"]
         OB["Obsidian Markdown\n(การ์ดเหตุการณ์ + ตารางสรุปรายวัน)"]
-        TG["Telegram Alert\n(ยิงแจ้งเตือนเข้าห้องกู้ภัยประจำพื้นที่)"]
+        TG["Telegram/Line Alert\n(ยิงแจ้งเตือนเข้าห้องกู้ภัยประจำพื้นที่)"]
     end
 
     Sources --> YTDL
