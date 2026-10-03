@@ -51,7 +51,6 @@ flowchart TD
     DOPA --> TG
 ```
 
-
 FlowChart End-to-End Pipeline
 
 ```text
@@ -97,10 +96,52 @@ FlowChart End-to-End Pipeline
                                          │
          ┌───────────────────────────────┼───────────────────────────────┐
          ▼                               ▼                               ▼
-[Google Sheets Real-time]        [Obsidian Markdown]             [Telegram Alert Bot]
+[Google Sheets Real-time]        [Obsidian Markdown]             [Telegram/Line Alert Bot]
 • กู้ภัยเปิดผ่านมือถือ           • สร้างการ์ดเคสรายวัน           • ยิงแจ้งเตือนเคสด่วนเข้ากลุ่ม
 • Dropdown เปลี่ยนสถานะเคส       • ตาราง DASHBOARD สรุป          • รองรับคำสั่ง /find แยกอำเภอ
 ```
+
+
+
+### ระบบ Automation เต็มรูปแบบ
+
+
+```text
+[ตั้งเวลา Cron Job รันทุก 5-10 นาที]
+           │
+           ▼
+[1. Apify Search ดึงข้อมูลอัตโนมัติ] ─── (ค้นหาด้วยคำคีย์เวิร์ด: น้ำท่วม, ช่วยด้วย, ขอความช่วยเหลือ)
+           │
+           ▼
+[2. บันทึกลง raw_flood_feeds] ──────── (เก็บ URL + Caption ดิบที่เพิ่งค้นพบ)
+           │
+           ▼ (Trigger หลังบ้านทำงานอัตโนมัติต่อทันที)
+[3. Worker หลังบ้านประมวลผล]
+   ├─ โหลดเสียงเฉพาะแทร็ก (yt-dlp)
+   ├─ ถอดข้อความเสียงภาษาไทย (Whisper STT)
+   ├─ วิเคราะห์พิกัด ตำบล/อำเภอ/จังหวัด และระดับความรุนแรง (LLM + DOPA)
+   └─ กรองและตัดเคสซ้ำ (Deduplication)
+           │
+           ▼
+[4. บันทึกลง verified_distress_cases]
+           │
+           ├────────────────────────────────────────┐
+           ▼                                        ▼
+[5. Telegram Bot / LINE Bot Dispatcher]   [6. Web Dashboard / แผนที่กู้ภัย]
+   • ยิง Flex Message / การ์ดฉุกเฉิน        • อัปเดตตำแหน่งบนแผนที่เรียลไทม์
+   • แจ้งเตือนเข้ากลุ่มกู้ภัยประจำพื้นที่    • ทีมกู้ภัยค้นหาเคสตามพื้นที่
+
+```
+	
+> [!NOTE]
+> **สรุปสิ่งที่ต้องตั้งค่าล่วงหน้า (ครั้งเดียวจบ):**
+> - **คีย์เวิร์ดเฝ้าระวัง:** กำหนดคำที่เกี่ยวกับภัยพิบัติไว้ในระบบ
+> - **API Token:** ใส่ `APIFY_TOKEN` ในไฟล์ `.env`
+> - **ตั้งเวลาทำงาน:** ตั้ง Cron Job ให้สคริปต์ค้นหารันทุกๆ 5–10 นาที ระบบจะกวาดหาเคสใหม่ ถอดเสียง วิเคราะห์พิกัด และแจ้งเตือนกู้ภัยให้อัตโนมัติโดยไม่ต้องมีคนเฝ้าครับ
+
+```
+
+
 ### Database Schema
 
 ```text
@@ -126,13 +167,13 @@ FlowChart End-to-End Pipeline
                                                  | summary              TEXT (สรุปเหตุการณ์)  |
                                                  | case_status          TEXT (OPEN/RESOLVED)  |
                                                  | assigned_team        TEXT (ทีมที่รับงาน)   |
-+---------------------------------------------------------------------------------------------+
+
 ```
 
 ### แผนภาพลำดับงานของกู้ภัยหน้างาน (Rescue Dispatch Sequence)
 
 ```text
-เจ้าหน้าที่กู้ภัย / อาสาสมัครหน้างาน            ระบบ FloodVoice / Telegram Bot & Google Sheet
+เจ้าหน้าที่กู้ภัย / อาสาสมัครหน้างาน            ระบบ FloodVoice / Telegram,Line Bot  & Google Sheet
              │                                                  │
              │──── 1. พิมพ์ค้นหาพื้นที่: /find กบินทร์ ─────────>│
              │                                                  │ ฐานข้อมูลทำการ Query:
@@ -183,6 +224,8 @@ cp .env.example .env
 | **`GOOGLE_SERVICE_ACCOUNT_FILE`**<br>`(เมื่อใช้ Google Sheets)` | ไฟล์ Key สิทธิ์การเข้าถึง (`service_account.json`) | สร้าง Service Account ใน Google Cloud Console แล้วแชร์ Sheet ให้บอท |
 | **`TELEGRAM_BOT_TOKEN`**<br>`(ทางเลือกแจ้งเตือน)` | โทเคนบอทสำหรับยิงแจ้งเตือนเคสฉุกเฉิน | คุยกับ [@BotFather](https://t.me/BotFather) ใน Telegram พิมพ์ `/newbot` |
 | **`TELEGRAM_CHAT_ID`**<br>`(ทางเลือกแจ้งเตือน)` | ID ห้องแชตหรือกลุ่มกู้ภัยที่ต้องการรับแจ้งเตือน | ดึงบอทเข้ากลุ่ม แล้วเช็ก ID ผ่านคำสั่งบอท |
+| `LINE_CHANNEL_ACCESS_TOKEN` | ทางเลือก | Access Token จาก LINE Developers Console (ยิง Flex Message) |
+| `LINE_NOTIFY_TOKEN` | ทางเลือก | Token สำหรับยิงข้อความด่วนเข้ากลุ่ม LINE กู้ภัย (สมัครง่ายและฟรี) |
 | **`YOUTUBE_API_KEY`**<br>`(ทางเลือก)` | ค้นหา Live Stream และคลิปน้ำท่วมบน YouTube | เปิดใช้ YouTube Data API v3 ฟรี *(หากไม่ใส่ ระบบจะค้นหาผ่าน yt-dlp ให้อัตโนมัติ)* |
 | **`APIFY_TOKEN`**<br>`(สำหรับ FB, IG, TikTok, X)` | ดึงโพสต์และฟีดจาก Social Media 4 แพลตฟอร์ม | รับโทเคนฟรีได้จาก [Apify.com](https://apify.com/) *(มีฟรีเครดิต $5 ทุกเดือน)* |
 
