@@ -51,6 +51,65 @@ flowchart TD
     DOPA --> TG
 ```
 
+Database Schema
++------------------------------------+           +--------------------------------------------+
+|          raw_social_feeds          |           |          verified_distress_cases           |
++------------------------------------+           +--------------------------------------------+
+| id                  UUID (PK)      |           | id                   UUID (PK)             |
+| created_at          TIMESTAMPTZ    |           | created_at           TIMESTAMPTZ           |
+| source_platform     TEXT           |──(ประมวล)─>| source_platform      TEXT (FB/TT/YT/IG/X)  |
+|                     (FB/IG/TT/YT/X)|   ผลด้วย   | source_url           TEXT (UNIQUE)         |
+| source_url          TEXT (UNIQUE)  |    AI     | is_distress          BOOLEAN (เคสจริง)     |
+| title               TEXT           |           | urgency_level        TEXT (CRITICAL/HIGH)  |
+| caption             TEXT           |           | water_level          TEXT (เช่น 'ระดับอก') |
+| is_live             BOOLEAN        |           | water_level_code     TEXT (LEVEL_1-5)      |
+| status              TEXT           |           | province             TEXT (เช่น 'ปราจีนบุรี')|
+|                     (PENDING/DONE) |           | district             TEXT (เช่น 'กบินทร์บุรี')|
++------------------------------------+           | subdistrict          TEXT (เช่น 'กบินทร์')   |
+                                                 | village_or_community TEXT (หมู่ที่/ชุมชน)  |
+                                                 | landmark_detail      TEXT (จุดสังเกต/ซอย)  |
+                                                 | needs                TEXT[] (ยา/นมเด็ก/เรือ)|
+                                                 | headcount            TEXT (จำนวนคน/ติดเตียง)|
+                                                 | contact_info         TEXT (เบอร์โทร/ชื่อ)   |
+                                                 | summary              TEXT (สรุปเหตุการณ์)  |
+                                                 | case_status          TEXT (OPEN/RESOLVED)  |
+                                                 | assigned_team        TEXT (ทีมที่รับงาน)   |
+                                                 +--------------------------------------------+
+
+
+แผนภาพลำดับงานของกู้ภัยหน้างาน (Rescue Dispatch Sequence)
+เจ้าหน้าที่กู้ภัย / อาสาสมัครหน้างาน            ระบบ FloodVoice / Telegram Bot & Google Sheet
+             │                                                  │
+             │──── 1. พิมพ์ค้นหาพื้นที่: /find กบินทร์ ─────────>│
+             │                                                  │ ฐานข้อมูลทำการ Query:
+             │                                                  │ • province = 'ปราจีนบุรี'
+             │                                                  │ • district = 'กบินทร์บุรี'
+             │                                                  │ • case_status = 'OPEN'
+             │                                                  │ • เรียงตาม water_level_code ด่วนสุด
+             │                                                  │
+             │<─── 2. ส่งลิสต์เคสวิกฤต 5 รายการแรก ─────────────│
+             │     ┌──────────────────────────────────────┐     │
+             │     │ 🚨 [CRITICAL] น้ำระดับอก/คอ          │     │
+             │     │ 📍 ต.กบินทร์ ม.3 ซอยข้างวัดท่าลาน    │     │
+             │     │ 👥 มีคนแก่ติดเตียง 1, เด็ก 1 (รวม 4) │     │
+             │     │ 📦 ต้องการ: เรือท้องแบน, ยาเบาหวาน   │     │
+             │     │ 📞 โทร: 081-xxx-xxxx                 │     │
+             │     │ 🔗 ลิงก์คลิป: [ดูวิดีโอยืนยัน]       │     │
+             │     │ [ ปุ่ม: 🔴 รับเคสนี้ (#104) ]        │     │
+             │     └──────────────────────────────────────┘     │
+             │                                                  │
+             │──── 3. กู้ภัยกดปุ่ม [รับเคสนี้ (#104)] ─────────>│
+             │                                                  │ • เปลี่ยน case_status -> 'IN_PROGRESS'
+             │                                                  │ • บันทึก assigned_team = 'ทีมกู้ภัยสว่างฯ'
+             │                                                  │ • อัปเดตสีแถวใน Google Sheet ทันที
+             │                                                  │
+             │<─── 4. แจ้งยืนยัน: "รับเคสแล้ว กำลังนำเรือเข้า" ──│
+             │                                                  │
+             │                                                  │─── 5. บรอดแคสต์แจ้งศูนย์สั่งการ ──┐
+             │                                                  │    "ทีมสว่างฯ รับเคส #104 แล้ว"   │
+             │                                                  │    (ป้องกันทีมอื่นเข้าซ้ำซ้อน)   ▼
+
+             
 ---
 
 คู่มือตั้งค่า API Keys (ต้องเปลี่ยนตรงไหนบ้าง?)
@@ -178,6 +237,8 @@ docker compose up -d --build
 
 | 🔴 HIGH | ระดับเอว | เชียงราย | แม่สาย | เวียงพางคำ | ข้าวกล่อง, ยาประจำตัว | 089-xxx-xxxx | [ดู Live สด] |
 
+
+
 ---
 
 English Summary
@@ -196,3 +257,43 @@ Key Features:
 สัญญาอนุญาต (License)
 
 โปรเจกต์นี้เผยแพร่ภายใต้สัญญาอนุญาต [MIT License](LICENSE) ทุกคนสามารถนำไปใช้งาน แจกจ่าย และพัฒนาต่อยอดเพื่อสาธารณประโยชน์ได้อย่างอิสระ แม้จะเป็นตัวเริ่มต้น ก็หวังว่าจะเป็นประโยชน์นะครับ 
+
+
+
+
+<div align="center">
+
+⭐ ร่วมสนับสนุนและกระจายเครื่องมือนี้สู่อาสาสมัคร
+Help Others Discover & Deploy This Repository
+
+หากโปรเจกต์นี้มีประโยชน์ต่อการช่วยเหลือผู้ประสบภัยน้ำท่วมหรือชุมชนของคุณ:  
+*If this repository is useful for local flood response or your community:*
+
+⭐ กด Star ให้โปรเจกต์ · 🔗 แชร์ต่อทีมกู้ภัยและจิตอาสา · 🍴 Fork ไปรัน Node ประจำพื้นที่**  
+⭐ Star the repository · 🔗 Share it with rescue teams · 🍴 Fork to build your local node*
+
+<br/>
+
+[![Star](https://img.shields.io/badge/⭐_STAR-THIS_REPOSITORY-f59e0b?style=for-the-badge)](https://github.com/sufarwee/FloodVoice-Thai)
+[![Fork](https://img.shields.io/badge/🍴_FORK-REPOSITORY-10b981?style=for-the-badge)](https://github.com/sufarwee/FloodVoice-Thai/fork)
+[![Share on Facebook](https://img.shields.io/badge/SHARE-ON_FACEBOOK-1877f2?style=for-the-badge&logo=facebook&logoColor=white)](https://www.facebook.com/sharer/sharer.php?u=https://github.com/sufarwee/FloodVoice-Thai)
+[![Share on X](https://img.shields.io/badge/SHARE-ON_X-000000?style=for-the-badge&logo=x&logoColor=white)](https://twitter.com/intent/tweet?text=FloodVoice-Thai%20ระบบ%20Open-source%20AI%20ตรวจจับสัญญาณขอความช่วยเหลือน้ำท่วมจากคลิป%20Social%20Media%20&url=https://github.com/sufarwee/FloodVoice-Thai)
+
+<br/>
+
+> **รู้จักนักพัฒนา มูลนิธิกู้ภัย หรือศูนย์บรรเทาสาธารณภัยในพื้นที่หรือไม่?**  
+> ร่วมแชร์ลิงก์คลังโค้ดนี้ เพื่อช่วยเพิ่มจุดเฝ้าระวังและส่งต่อข้อมูลพิกัดผู้เดือดร้อนให้ครอบคลุมทุกจังหวัดทั่วไทย  
+> *Know a developer, rescue foundation, or disaster response team in Thailand? Send them this repository to help expand monitoring coverage across flood-affected provinces.*
+
+<br/>
+
+ฟังเสียงผู้ประสบภัย • ระบุพิกัดด่วน • ร่วมส่งต่อความช่วยเหลือ
+Listen to Voices • Locate Distress • Save Lives
+
+**Open Flood Intelligence for Community Resilience in Thailand**
+
+ร่วมพัฒนาหรือแจ้งประสานงาน : Sufarwee@gmail.com · [เปิด Issue บน GitHub](https://github.com/sufarwee/FloodVoice-Thai/issues) ·
+
+
+</div>
+
